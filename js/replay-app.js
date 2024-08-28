@@ -2,20 +2,36 @@ class ReplayApp extends LightElement {
   static tagName = "replay-app";
   static css = `
   replay-editor {
-    width: 800px;
-    height: 600px;
+    position: absolute;
+    top: 1em;
+    left: 0;
+    right: 50%;
+    bottom: 0;
   }
 
-  iframe {
-    width: 800px;
-    height: 600px;
-    padding: 1em;
-    border: 1px solid #000000;
+  div#output {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    right: 0;
+    bottom: 0;
+    background-color: #ffffff;
+    border: 1px solid transparent;
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      padding: 1em;
+      box-sizing: border-box;
+      border: none;
+    }
   }
   `;
   static html = `
     <replay-editor (load)="this._triggerRendering()" (change)="this._triggerRendering()" [value]="this._code" language="javascript"></replay-editor>
-    <iframe src="about:blank" (load)="this.renderIframe()"></iframe>
+    <div id="output">
+      <iframe src="about:blank" (load)="this.renderIframe()"></iframe>
+    </div>
   `;
 
   _code;

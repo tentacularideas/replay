@@ -70,6 +70,12 @@ class ReplayEditor extends LightElement {
       this.dispatchEvent(new Event("change"));
     });
 
+    const resizeObserver = new ResizeObserver((_) => {
+      editor.layout();
+    });
+
+    resizeObserver.observe(this.getHost());
+
     this.dispatchEvent(new Event("load"));
   }
 
