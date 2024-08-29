@@ -1,0 +1,23 @@
+{
+    "name": "LightElement Replay",
+    "short_name": "Replay",
+    "start_url": "./",
+    "id": "tentacularideas.replay",
+    "display": "standalone",
+    "theme_color": "#1e1e1e",
+    "background_color": "#1e1e1e",
+    "scope": "./",
+    "icons": [
+       {
+          "src": "./lightelement-512x512.png",
+          "type": "image/png",
+          "sizes": "512x512"
+       },
+       {
+          "src": "./lightelement-512x512.png",
+          "type": "image/png",
+          "sizes": "512x512",
+          "purpose": "maskable"
+       }
+     ]
+  }
