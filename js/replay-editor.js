@@ -30,6 +30,8 @@ class ReplayEditor extends LightElement {
 
   value;
   language;
+  #editor;
+  #monacoModule;
 
   constructor(shell) {
     super(shell);
@@ -43,19 +45,22 @@ class ReplayEditor extends LightElement {
 
   async #initializeEditor() {
     window.MonacoEnvironment = {
-      getWorkerUrl: function(workerId, label) {
-        return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
+      getWorker: function(workerId, label) {
+        const src = `
           self.MonacoEnvironment = {
             baseUrl: 'https://unpkg.com/monaco-editor@latest/min/'
           };
-          importScripts('https://unpkg.com/monaco-editor@latest/min/vs/base/worker/workerMain.js');`
-        )}`;
+          importScripts('https://unpkg.com/monaco-editor@latest/min/vs/base/worker/workerMain.js');
+        `;
+
+        const blob = new Blob([src], { type: "application/javascript"} );
+        return new Worker(URL.createObjectURL(blob));
       }
     };
 
-    const monaco = await import("https://cdn.jsdelivr.net/npm/monaco-editor@latest/+esm");
+    this.#monacoModule = await import("https://cdn.jsdelivr.net/npm/monaco-editor@latest/+esm");
 
-    const editor = monaco.editor.create(this.getDom().querySelector('#editor'), {
+    this.#editor = this.#monacoModule.editor.create(this.getDom().querySelector('#editor'), {
       value: this.value,
       language: this.language || undefined,
       theme: 'vs-dark',
@@ -63,15 +68,16 @@ class ReplayEditor extends LightElement {
       minimap: {
         enabled: false,
       },
+      smoothScrolling: true,
     });
 
-    editor.getModel().onDidChangeContent(() => {
-      this.value = editor.getModel().getValue();
+    this.#editor.getModel().onDidChangeContent(() => {
+      this.value = this.#editor.getModel().getValue();
       this.dispatchEvent(new Event("change"));
     });
 
     const resizeObserver = new ResizeObserver((_) => {
-      editor.layout();
+      this.#editor.layout();
     });
 
     resizeObserver.observe(this.getHost());
@@ -81,6 +87,46 @@ class ReplayEditor extends LightElement {
 
   getValue() {
     return this.value;
+  }
+
+  setValue(value) {
+    this.#editor.getModel().setValue(value);
+  }
+
+  setSelection(startIndex, endIndex) {
+    const startPosition = this.#editor.getModel().getPositionAt(startIndex);
+    const endPosition = this.#editor.getModel().getPositionAt(endIndex);
+    const selection = new this.#monacoModule.Selection(startPosition.lineNumber, startPosition.column, endPosition.lineNumber, endPosition.column);
+
+    this.#editor.revealRange(selection, this.#monacoModule.editor.ScrollType.Smooth);
+    this.#editor.setSelection(selection);
+  }
+
+  setCursor(index) {
+    this.setSelection(index, index);
+  }
+
+  type(content) {
+    const model = this.#editor.getModel();
+    const selection = this.#editor.getSelection();
+    const afterEditSelection = new this.#monacoModule.Selection(selection.startLineNumber, selection.startColumn + content.length, selection.startLineNumber, selection.startColumn + content.length);
+
+    model.pushEditOperations(
+      [selection],
+      [{
+        range: selection,
+        text: content,
+      }],
+      (_) => [selection],
+    );
+  }
+
+  deleteCurrentSelection() {
+    this.type("");
+  }
+
+  focus() {
+   this.#editor.focus(); 
   }
 }
 

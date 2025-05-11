@@ -4,7 +4,7 @@
     "start_url": "./",
     "id": "tentacularideas.replay",
     "display": "standalone",
-    "theme_color": "#1e1e1e",
+    "theme_color": "#3c3c3c",
     "background_color": "#1e1e1e",
     "scope": "./",
     "icons": [
