@@ -327,7 +327,7 @@ class ReplayApp extends LightElement {
     }];
     this._currentFrame = this._frames[0];
     this._playing = false;
-    this._recordingMode = false;
+    this._recordingMode = true;
     this.#editor = null;
   }
 
@@ -412,6 +412,7 @@ DemoHello.register();
 
   _toggleRecordingMode() {
     this._recordingMode = !this._recordingMode;
+    this._triggerRendering();
   }
 
   _nextFrame() {
@@ -645,8 +646,8 @@ DemoHello.register();
         content: `body {
           display: flex;
           flex-direction: row;
-          justify-content: stretch;
-          align-items: stretch;
+          justify-content: ${this._recordingMode ? 'center' : 'stretch'};
+          align-items: ${this._recordingMode ? 'center' : 'stretch'};
 
           padding: 0;
           margin: 0;
@@ -668,7 +669,7 @@ DemoHello.register();
         el.append(iframeDocument.createTextNode(tag.content));
       }
 
-      iframeDocument.body.append(el);
+      iframeDocument.head.append(el);
     }
 
 
@@ -678,10 +679,10 @@ DemoHello.register();
     const leScript = iframeDocument.createElement("script");
     leScript.setAttribute("src", "https://tentacularideas.github.io/lightelement/lightelement.js");
     leScript.onload = () => {
-      iframeDocument.body.append(iframeScript);
+      iframeDocument.head.append(iframeScript);
     };
 
-    iframeDocument.body.append(leScript);
+    iframeDocument.head.append(leScript);
 
     iframe.customElements.whenDefined(tagName).then(() => {
       const tag = iframeDocument.createElement(tagName);
