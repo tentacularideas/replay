@@ -327,7 +327,7 @@ class ReplayApp extends LightElement {
     }];
     this._currentFrame = this._frames[0];
     this._playing = false;
-    this._recordingMode = true;
+    this._recordingMode = false;
     this.#editor = null;
   }
 
