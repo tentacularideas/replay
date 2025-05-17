@@ -28,12 +28,24 @@ DemoHello.register();
 class ReplayApp extends LightElement {
   static tagName = "replay-app";
   static css = `
-    section.menu {
+    :host {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      margin: 0;
+      bottom: 0;
+    }
+
+    body {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+
+    section.menu {
       padding: 0 0.35em;
       height: 3em;
       overflow: hidden;
@@ -194,46 +206,67 @@ class ReplayApp extends LightElement {
       }
     }
 
-    replay-editor {
-      position: absolute;
-      top: 3.5em;
-      left: 0;
-      right: 50%;
-      bottom: 0;
+    section.ide {
+      position: relative;
+      flex: 1;
 
-      z-index: 500;
-    }
+      display: flex;
+      flex-direction: row;
+      justify-content: stretch;
+      align-items: stretch;
+      box-sizing: border-box;
 
-    div#output {
-      position: absolute;
-      top: 3em;
-      left: 50%;
-      right: 0;
-      bottom: 0;
-      background-color: #ffffff;
-      border: 1px solid transparent;
+      replay-editor {
+        margin-top: 0.5em;
+        flex: 1;
+        z-index: 500;
+      }
 
-      z-index: 750;
+      div#output {
+        position: relative;
+        display: flex;
+        flex: 1;
+        justify-content: stretch;
+        align-items: stretch;
+        border: 1px solid transparent;
+        background-color: #ffffff;
 
-      iframe {
-        width: 100%;
-        height: 100%;
-        padding: 1em;
-        box-sizing: border-box;
-        border: none;
+        z-index: 750;
+
+        iframe {
+          flex: 1;
+          padding: 1em;
+          box-sizing: border-box;
+          border: none;
+        }
+      }
+
+      &.recording {
+        width: auto;
+        aspect-ratio: 9/16;
+        align-self: center;
+
+        margin: 3px 0;
+        box-shadow: 0px 0px 0px 3px #c0c0c0;
+
+        flex-direction: column-reverse;
+        gap: 0.2em;
+
+        div#output {
+          flex: 0;
+          aspect-ratio: 16/9;
+          margin: 0 0.8em;
+          margin-top: 0.5em;
+          border-radius: 1em;
+
+          box-shadow: 0 0 7px #1e1e1e;
+          filter: drop-shadow(1px 1px 2px #000000);
+        }
       }
     }
 
     section.menu.hidden {
       display: none;
-    }
-
-    section.menu.hidden + replay-editor {
-      top: 0.5em;
-    }
-
-    section.menu.hidden + replay-editor + div#output {
-      top: 0;
     }
   `;
   static html = `
@@ -270,10 +303,12 @@ class ReplayApp extends LightElement {
         </ul>
       </aside>
     </section>
-    <replay-editor (load)="this._triggerRendering()" (change)="this._updateCode()" [value]="this._code" language="javascript"></replay-editor>
-    <div id="output">
-      <iframe src="about:blank" (load)="this.renderIframe()" sandox="allow-scripts, allow-forms"></iframe>
-    </div>
+    <section [class]="'ide' + (this._recordingMode ? ' recording' : '')">
+      <replay-editor (load)="this._triggerRendering()" (change)="this._updateCode()" [value]="this._code" language="javascript"></replay-editor>
+      <div id="output">
+        <iframe src="about:blank" (load)="this.renderIframe()" sandox="allow-scripts, allow-forms"></iframe>
+      </div>
+    </section>
   `;
 
   _frames;
@@ -608,8 +643,14 @@ DemoHello.register();
           type: "text/css",
         },
         content: `body {
+          display: flex;
+          flex-direction: row;
+          justify-content: stretch;
+          align-items: stretch;
+
           padding: 0;
           margin: 0;
+
           font-family: "Noto Sans", sans-serif;
           font-weight: 300;
         }`
