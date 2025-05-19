@@ -254,7 +254,7 @@ class ReplayApp extends LightElement {
 
         div#output {
           flex: 0;
-          aspect-ratio: 16/9;
+          flex-basis: 32%;
           margin: 0 0.8em;
           margin-top: 0.5em;
           border-radius: 1em;
@@ -649,8 +649,11 @@ DemoHello.register();
           justify-content: ${this._recordingMode ? 'center' : 'stretch'};
           align-items: ${this._recordingMode ? 'center' : 'stretch'};
 
+          position: relative;
           padding: 0;
           margin: 0;
+          width: 100%;
+          height: 100%;
 
           font-family: "Noto Sans", sans-serif;
           font-weight: 300;
