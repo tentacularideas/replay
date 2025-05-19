@@ -654,6 +654,10 @@ DemoHello.register();
 
           font-family: "Noto Sans", sans-serif;
           font-weight: 300;
+        }
+          
+        ${tagName} {
+          display: flex;
         }`
       },
     ];
