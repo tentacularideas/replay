@@ -644,11 +644,6 @@ DemoHello.register();
           type: "text/css",
         },
         content: `body {
-          display: flex;
-          flex-direction: row;
-          justify-content: ${this._recordingMode ? 'center' : 'stretch'};
-          align-items: ${this._recordingMode ? 'center' : 'stretch'};
-
           position: relative;
           padding: 0;
           margin: 0;
@@ -658,10 +653,15 @@ DemoHello.register();
           font-family: "Noto Sans", sans-serif;
           font-weight: 300;
         }
-          
+        ` + (this._recordingMode ? `
         ${tagName} {
+          position: absolute;
           display: flex;
-        }`
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          overflow: hidden;
+        }` : ``),
       },
     ];
 
